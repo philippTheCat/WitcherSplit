@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Pipes;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using LiveSplit.Model;
@@ -28,11 +30,12 @@ namespace WitcherSplit {
             settings = new ComponentSettings();
             settings.logfilePath = @"C:\Users\chatz\Documents\The Witcher 3\scriptslog.txt";
             
-
-            LogFileMonitor logFileMonitor = new LogFileMonitor(settings.logfilePath,"\r\n");
-            logFileMonitor.OnLine += onLine;
+            ThreadStart childref = new ThreadStart(Listen);
+            Debug.WriteLine("In Main: Creating the Child thread");
+         
+            Thread childThread = new Thread(childref);
+            childThread.Start();
             
-            logFileMonitor.Start();
             model = new TimerModel { CurrentState = state };
             model.InitializeGameTime();
 
@@ -42,20 +45,39 @@ namespace WitcherSplit {
             onStart(null,null);
         }
 
+        private void Listen() {
+            var server = new NamedPipeServerStream("WitcherSplit", PipeDirection.InOut, -1);
+            server.WaitForConnection();
+
+           while(true)
+            {
+                var len = new byte[1];
+                server.Read(len, 0, 1); 
+                
+                byte[] buffer = new byte[len[0]];
+
+                server.Read(buffer, 0, len[0]);
+
+                byte[] factNameBuf = buffer.Take(len[0] - 4).ToArray();
+                byte[] factValueBuf = buffer.Skip(len[0] - 4).ToArray();
+
+                string factName = System.Text.Encoding.Default.GetString(factNameBuf);
+                int factValue = BitConverter.ToInt32(factValueBuf, 0);
+                Debug.WriteLine("factName:" + factName + "\n\n");
+                Debug.WriteLine("factValue: " + factValue);
+                
+                onFactChange(factName, factValue);
+            }
+        }
+
         private void onStart(object sender, EventArgs phase) {
            
 
             visited.Clear();
         }
 
-        private void onLine(object sender, LogFileMonitorLineEventArgs e) {
-            string line = e.Line;
-
-            string tag = "[Script] [addFact] ";
-            if (line.Contains(tag)) {
-                string[] factLine = line.Substring(tag.Length).Split(new [] {" : "}, StringSplitOptions.None);
-                string fact = factLine[0];
-                string value = factLine[1];
+        private void onFactChange(String fact, int value) {
+       
                 
                 
                 /*if (!visited.Contains(quest)) {
@@ -63,26 +85,27 @@ namespace WitcherSplit {
                 }*/
                 
                 Debug.WriteLine("changed fact: "+ fact + " to value " + value);
-                
-                
 
-                if (visited.Add(fact) && (state.Run.Any(seg => seg.Name == fact) || model.CurrentState.CurrentPhase == TimerPhase.NotRunning) ) {
-                    if (model.CurrentState.CurrentPhase == TimerPhase.NotRunning) {
-                        model.Start();
-                    } 
-                    else {
-                        model.Split();
 
-                        // if its the last one stop the run
-                        // the last one is an empty split containing the quest name of the next quest afterwards
-                        if (fact == state.Run[state.Run.Count-1].Name) {
-                            model.Split();
-                        }
-                    }
 
-                    Debug.WriteLine("did split");
+            if (visited.Add(fact) && (state.Run.Any(seg => seg.Name == fact) ||
+                                      model.CurrentState.CurrentPhase == TimerPhase.NotRunning)) {
+                if (model.CurrentState.CurrentPhase == TimerPhase.NotRunning) {
+                    model.Start();
                 }
+                else {
+                    model.Split();
+
+                    // if its the last one stop the run
+                    // the last one is an empty split containing the quest name of the next quest afterwards
+                    if (fact == state.Run[state.Run.Count - 1].Name) {
+                        model.Split();
+                    }
+                }
+
+                Debug.WriteLine("did split");
             }
+
         }
 
         public override XmlNode GetSettings(XmlDocument document)
