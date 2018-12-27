@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Users\chatz\LiveSplit_1.6.9\Components</OutputPath>
+    <OutputPath>C:\Users\chatz\Downloads\LiveSplit_1.7.6</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LiveSplit.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\LiveSplit_1.6.9\LiveSplit.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\Downloads\LiveSplit_1.7.6\LiveSplit.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -42,7 +42,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="UpdateManager, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\LiveSplit_1.6.9\UpdateManager.dll</HintPath>
+      <HintPath>..\..\..\..\..\Downloads\LiveSplit_1.7.6\UpdateManager.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
