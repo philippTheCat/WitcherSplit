@@ -38,6 +38,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="UpdateManager, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
@@ -46,11 +47,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentSettings.cs" />
+    <Compile Include="EditableListBox.cs" />
     <Compile Include="Factory.cs" />
-    <Compile Include="LogFileMonitor.cs" />
     <Compile Include="SplitWriter.cs" />
     <Compile Include="WitcherSplitComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="release.sh" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
